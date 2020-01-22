@@ -1,0 +1,30 @@
+{
+  "name": "buy-and-sell",
+  "version": "1.0.0",
+  "description": "Учебный проект \"Куплю. Продам.\"",
+  "main": "./src/service/service.js",
+  "scripts": {
+    "start": "node ./src/service/service.js",
+    "test": "npm run eslint",
+    "eslint": "eslint --ext .js src/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arcmag/55546-buy-and-sell-3.git"
+  },
+  "keywords": [
+    "htmlacademy",
+    "nodejs",
+    "training-project"
+  ],
+  "author": "arcmag <arcmag-work@mail.ru>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/arcmag/55546-buy-and-sell-3/issues"
+  },
+  "homepage": "https://github.com/arcmag/55546-buy-and-sell-3#readme",
+  "devDependencies": {
+    "eslint": "6.8.0",
+    "eslint-config-htmlacademy": "0.5.2"
+  }
+}
