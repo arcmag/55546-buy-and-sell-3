@@ -1,6 +1,7 @@
 'use strict';
 
-const fs = require(`fs`);
+const chalk = require(`chalk`);
+const fs = require(`fs`).promises;
 const {getRandomInt, shuffle} = require(`../../utils`);
 
 const EXIT_CODE_ERROR = 1;
@@ -55,13 +56,13 @@ const ItemImgCount = {
 
 module.exports = {
   name: `--generate`,
-  run(count) {
+  async run(count) {
     if (count > 1000) {
-      console.error(`Не больше 1000 объявлений`);
+      console.error(chalk.red(`Не больше 1000 объявлений`));
       process.exit(EXIT_CODE_ERROR);
     }
 
-    const mockData = Array(+(count || DEFAULT_COUNT)).fill(null).map(() => ({
+    const mockData = Array.from({length: +(count || DEFAULT_COUNT)}).map(() => ({
       type: OfferType[getRandomInt(0, 1) ? `offer` : `sale`],
       title: TITLES[getRandomInt(0, TITLES.length - 1)],
       description: shuffle(SENTENCES.slice()).slice(0, getRandomInt(1, MAX_SENTENCES_COUNT)),
@@ -70,15 +71,13 @@ module.exports = {
       category: shuffle(CATEGORIES.slice()).slice(0, getRandomInt(1, CATEGORIES.length - 1)),
     }));
 
-    fs.writeFile(FILE_NAME, JSON.stringify(mockData), (err) => {
-      if (err) {
-        console.error(`Ошибка при записи моковых данных в файл`);
-        process.exit(EXIT_CODE_ERROR);
-      }
-
-      console.log(`Данные успешно сгенерированы`);
-      process.exit();
-    });
+    try {
+      await fs.writeFile(FILE_NAME, JSON.stringify(mockData));
+      console.log(chalk.green(`Данные успешно сгенерированы`));
+    } catch (err) {
+      console.error(chalk.red(`Ошибка при записи моковых данных в файл: ${err}`));
+      process.exit(EXIT_CODE_ERROR);
+    }
   }
 };
 
