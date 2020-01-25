@@ -9,36 +9,6 @@ const DEFAULT_COUNT = 1;
 const FILE_NAME = `mock.json`;
 const MAX_SENTENCES_COUNT = 4;
 
-const TITLES = [
-  `Продам книги Стивена Кинга`,
-  `Продам новую приставку Sony Playstation 5`,
-  `Продам отличную подборку фильмов на VHS`,
-  `Куплю антиквариат`,
-  `Куплю породистого кота`,
-];
-
-const SENTENCES = [
-  `Товар в отличном состоянии.`,
-  `Пользовались бережно и только по большим праздникам.`,
-  `Продаю с болью в сердце...`,
-  `Бонусом отдам все аксессуары.`,
-  `Даю недельную гарантию.`,
-  `Если товар не понравится — верну всё до последней копейки.`,
-  `Это настоящая находка для коллекционера!`,
-  `Если найдёте дешевле — сброшу цену.`,
-  `Таких предложений больше нет!`,
-  `При покупке с меня бесплатная доставка в черте города.`,
-];
-
-const CATEGORIES = [
-  `Книги`,
-  `Разное`,
-  `Посуда`,
-  `Игры`,
-  `Животные`,
-  `Журналы`,
-];
-
 const OfferType = {
   offer: `offer`,
   sale: `sale`,
@@ -61,6 +31,10 @@ module.exports = {
       console.error(chalk.red(`Не больше 1000 объявлений`));
       process.exit(EXIT_CODE_ERROR);
     }
+
+    const TITLES = (await fs.readFile(`data/titles.txt`)).toString().split(`\n`).filter((it) => it);
+    const SENTENCES = (await fs.readFile(`data/sentences.txt`)).toString().split(`\n`).filter((it) => it);
+    const CATEGORIES = (await fs.readFile(`data/categories.txt`)).toString().split(`\n`).filter((it) => it);
 
     const mockData = Array.from({length: +(count || DEFAULT_COUNT)}).map(() => ({
       type: OfferType[getRandomInt(0, 1) ? `offer` : `sale`],
