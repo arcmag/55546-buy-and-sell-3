@@ -24,6 +24,8 @@ const ItemImgCount = {
   max: 16,
 };
 
+const getDataByFile = async (path) => (await fs.readFile(path)).toString().trim().split(`\n`);
+
 module.exports = {
   name: `--generate`,
   async run(count) {
@@ -32,17 +34,17 @@ module.exports = {
       process.exit(EXIT_CODE_ERROR);
     }
 
-    const TITLES = (await fs.readFile(`data/titles.txt`)).toString().split(`\n`).filter((it) => it);
-    const SENTENCES = (await fs.readFile(`data/sentences.txt`)).toString().split(`\n`).filter((it) => it);
-    const CATEGORIES = (await fs.readFile(`data/categories.txt`)).toString().split(`\n`).filter((it) => it);
+    const titles = await getDataByFile(`data/titles.txt`);
+    const sentences = await getDataByFile(`data/sentences.txt`);
+    const categories = await getDataByFile(`data/categories.txt`);
 
-    const mockData = Array.from({length: +(count || DEFAULT_COUNT)}).map(() => ({
+    const mockData = Array.from({length: +(count || DEFAULT_COUNT)}, () => ({
       type: OfferType[getRandomInt(0, 1) ? `offer` : `sale`],
-      title: TITLES[getRandomInt(0, TITLES.length - 1)],
-      description: shuffle(SENTENCES.slice()).slice(0, getRandomInt(1, MAX_SENTENCES_COUNT)),
+      title: titles[getRandomInt(0, titles.length - 1)],
+      description: shuffle(sentences.slice()).slice(0, getRandomInt(1, MAX_SENTENCES_COUNT)),
       sum: getRandomInt(SumRestrict.min, SumRestrict.max),
       picture: `item${(`` + getRandomInt(ItemImgCount.min, ItemImgCount.max)).padStart(2, `0`)}.jpg`,
-      category: shuffle(CATEGORIES.slice()).slice(0, getRandomInt(1, CATEGORIES.length - 1)),
+      category: shuffle(categories.slice()).slice(0, getRandomInt(1, categories.length - 1)),
     }));
 
     try {
