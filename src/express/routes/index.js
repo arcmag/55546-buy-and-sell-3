@@ -1,47 +1,47 @@
 'use strict';
 
-const {Router: router} = require(`express`);
+const router = require(`express`).Router;
 
 const appRouter = router();
 
 appRouter.get(`/`, (req, res) => {
-  res.send(`/`);
+  res.render(`index`);
 });
 
 appRouter.get(`/register`, (req, res) => {
-  res.send(`/register`);
+  res.render(`sign-up`);
 });
 
 appRouter.get(`/login`, (req, res) => {
-  res.send(`/login`);
+  res.render(`login`);
 });
 
 appRouter.get(`/my`, (req, res) => {
-  res.send(`/my`);
+  res.render(`my-tickets`);
 });
 
 appRouter.get(`/my/comments`, (req, res) => {
-  res.send(`/my/comments`);
+  res.render(`comments`);
 });
 
 appRouter.get(`/offers/category/:id`, (req, res) => {
-  res.send(`/offers/category/:id`);
+  res.render(`category`);
 });
 
 appRouter.get(`/offers/add`, (req, res) => {
-  res.send(`/offers/add`);
+  res.render(`new-ticket`);
 });
 
 appRouter.get(`/search`, (req, res) => {
-  res.send(`/search`);
+  res.render(`search-result`);
 });
 
 appRouter.get(`/offers/edit/:id`, (req, res) => {
-  res.send(`/offers/edit/:id`);
+  res.render(`ticket-edit`);
 });
 
 appRouter.get(`/offers/:id`, (req, res) => {
-  res.send(`/offers/:id`);
+  res.render(`ticket`);
 });
 
 module.exports = appRouter;
