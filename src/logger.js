@@ -1,8 +1,9 @@
 'use strict';
 
+let level = process.env.LOG_LEVEL;
 const logger = require(`pino`)({
   name: `pino-and-express`,
-  level: process.env.LOG_LEVEL.trim() || `info`,
+  level: level ? level.trim() : `info`
 });
 
 module.exports = {
