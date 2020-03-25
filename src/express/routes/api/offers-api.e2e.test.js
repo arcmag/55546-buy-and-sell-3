@@ -1,50 +1,23 @@
 'use strict';
 
+const fs = require(`fs`).promises;
 const request = require(`supertest`);
 const server = require(`../../index`);
 
-const REAL_OFFER_ID = `um3Ewv3Dge9Dqu2KxXyvN`;
-const FAKE_OFFER_ID = `9Gc4QREIT1EiNQQuGD3YU2`;
-
-const REAL_COMMENT_ID = `6ggy7QHiRHUwnXyuL4z7d`;
-const FAKE_COMMENT_ID = `9Gc4QREIT1EiNQQuGD3YU2`;
-
-const mockOffer = {
-  "id": `9Gc4QREIT1EiNQQuGD3YU`,
-  "type": `sale`,
-  "title": `Куплю антиквариат`,
-  "description": [
-    `При покупке с меня бесплатная доставка в черте города.`
-  ],
-  "sum": 43588,
-  "picture": `item05.jpg`,
-  "category": [
-    `Журналы`,
-    `Книги`,
-    `Игры`
-  ],
-  "comments": [
-    {
-      "id": `uxoWVhwFsjLT8PuhVpk1O`,
-      "text": [
-        `С чем связана продажа? Почему так дешёво?`,
-        `Продаю в связи с переездом. Отрываю от сердца.`,
-        `Неплохо, но дорого`
-      ]
-    },
-    {
-      "id": `ZYcOXUaTW-7DGmXHAO-an`,
-      "text": [
-        `Неплохо, но дорого`,
-        `С чем связана продажа? Почему так дешёво?`,
-        `Вы что?! В магазине дешевле.`,
-        `Оплата наличными или перевод на карту?`
-      ]
-    }
-  ]
-};
-
 describe(`Проверка REST API для работы с объявлениями`, () => {
+  const FAKE_OFFER_ID = `9Gc4QREIT1EiNQQuGD3YU2`;
+  const FAKE_COMMENT_ID = `9Gc4QREIT1EiNQQuGD3YU2`;
+
+  let mockOffer = null;
+  let REAL_OFFER_ID = null;
+  let REAL_COMMENT_ID = null;
+
+  beforeAll(async () => {
+    mockOffer = JSON.parse((await fs.readFile(`mock.json`)).toString())[0];
+    REAL_OFFER_ID = mockOffer.id;
+    REAL_COMMENT_ID = mockOffer.comments[0].id;
+  });
+
   test(`Получение всех предложений`, async () => {
     const res = await request(server).get(`/api/offers`);
     expect(res.statusCode).toBe(200);
