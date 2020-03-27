@@ -4,16 +4,16 @@ const router = require(`express`).Router;
 const appRouter = router();
 const logger = require(`../../logger`).getLogger();
 const axios = require(`axios`);
-
-const URL = `http://localhost:3000`;
+const {getUrlRequest} = require(`../../utils`);
 
 appRouter.get(`/`, async (req, res) => {
   let offers = [];
 
   try {
-    offers = (await axios.get(`${URL}/api/offers`)).data;
+    offers = (await axios.get(getUrlRequest(req, `/api/offers`))).data;
   } catch (err) {
-    logger.error(`Ошибка при получении списка предложений`);
+    logger.error(`Ошибка при получении списка объявлений`);
+    return;
   }
 
   res.render(`index`, {offers});
@@ -34,7 +34,7 @@ appRouter.get(`/my`, async (req, res) => {
   let offers = [];
 
   try {
-    offers = (await axios.get(`${URL}/api/offers`)).data;
+    offers = (await axios.get(getUrlRequest(req, `/api/offers`))).data;
   } catch (err) {
     logger.error(`Ошибка при получении списка предложений`);
   }
@@ -47,7 +47,7 @@ appRouter.get(`/my/comments`, async (req, res) => {
   let offers = [];
 
   try {
-    offers = (await axios.get(`${URL}/api/offers`)).data.splice(0, 3);
+    offers = (await axios.get(getUrlRequest(req, `/api/offers`))).data.splice(0, 3);
   } catch (err) {
     logger.error(`Ошибка при получении списка предложений`);
   }
@@ -59,7 +59,7 @@ appRouter.get(`/my/comments`, async (req, res) => {
 appRouter.get(`/search`, async (req, res) => {
   let offers = [];
   try {
-    offers = (await axios.get(`${URL}/api/search/?query=${encodeURIComponent(req.query.search)}`)).data;
+    offers = (await axios.get(getUrlRequest(req, `/api/search/?query=${encodeURIComponent(req.query.search)}`))).data;
   } catch (err) {
     logger.error(`Ошибка при получении списка предложений`);
   }

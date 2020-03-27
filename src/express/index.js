@@ -7,13 +7,18 @@ const app = express();
 
 const logger = require(`../logger`).getLogger();
 const STATIC_DIR = path.join(__dirname, `public`);
+const formidableMiddleware = require(`express-formidable`);
 
 app.set(`view engine`, `pug`);
 app.set(`views`, path.join(__dirname, `templates`));
 
 app.use(express.static(STATIC_DIR));
 app.use(express.json());
-app.use(express.urlencoded({extended: false}));
+app.use(formidableMiddleware({
+  encoding: `utf-8`,
+  uploadDir: `./src/tmp`,
+  multiples: false,
+}));
 
 app.use((req, res, next) => {
   logger.debug(`Маршрут запроса: ${req.url}`);

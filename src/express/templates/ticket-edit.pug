@@ -28,7 +28,7 @@ block content
                   span Обязательное поле
               .ticket-form__row
                 select#category-field.form__select.js-multiple-select(name='category', data-label='Выбрать категорию публикации', multiple)
-                  each category, idx in categpries
+                  each category, idx in categories
                     option(value=(idx + 1), selected=offer.category.map(it => it.toLowerCase()).includes(category.toLowerCase()))= category
               .ticket-form__row
                 .form__field.form__field--price

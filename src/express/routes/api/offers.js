@@ -32,7 +32,6 @@ route.get(`/:offerId`, async (req, res) => {
 // POST / api / offers — создаёт новое объявление;
 route.post(`/`, async (req, res) => {
   const keys = [
-    `id`,
     `type`,
     `title`,
     `description`,
@@ -42,16 +41,24 @@ route.post(`/`, async (req, res) => {
     `comments`
   ];
 
+  let offer = {};
+  try {
+    offer = JSON.parse(req.fields);
+  } catch (err) {
+    logger.error(`Ошибка при парсинге данных нового объявления: ${err}`);
+    return;
+  }
+
   for (const key of keys) {
-    if (!req.body[key]) {
+    if (!offer[key]) {
       res.sendStatus(400);
-      logger.info(`Status code ${res.statusCode}`);
+      logger.info(`Не хватает данных для создания нового объявления, нужен ${key}`);
       return;
     }
   }
 
-  res.json({response: `New offer!`, data: req.body});
-  logger.info(`Status code ${res.statusCode}`);
+  res.json({response: `New offer!`, data: offer});
+  logger.info(`Объявление создано - status code: ${res.statusCode}`);
   return;
 });
 
