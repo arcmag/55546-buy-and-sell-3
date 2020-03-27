@@ -3,13 +3,24 @@
 const router = require(`express`).Router;
 const appRouter = router();
 const logger = require(`../../logger`).getLogger();
+const axios = require(`axios`);
 
-appRouter.get(`/`, (req, res) => {
-  res.render(`index`);
+const URL = `http://localhost:3000`;
+
+appRouter.get(`/`, async (req, res) => {
+  let offers = [];
+
+  try {
+    offers = (await axios.get(`${URL}/api/offers`)).data;
+  } catch (err) {
+    logger.error(`Ошибка при получении списка предложений`);
+  }
+
+  res.render(`index`, {offers});
   logger.info(`Status code ${res.statusCode}`);
 });
 
-appRouter.get(`/register`, (req, res) => {
+appRouter.get(`/register`, async (req, res) => {
   res.render(`sign-up`);
   logger.info(`Status code ${res.statusCode}`);
 });
@@ -19,18 +30,41 @@ appRouter.get(`/login`, (req, res) => {
   logger.info(`Status code ${res.statusCode}`);
 });
 
-appRouter.get(`/my`, (req, res) => {
-  res.render(`my-tickets`);
+appRouter.get(`/my`, async (req, res) => {
+  let offers = [];
+
+  try {
+    offers = (await axios.get(`${URL}/api/offers`)).data;
+  } catch (err) {
+    logger.error(`Ошибка при получении списка предложений`);
+  }
+
+  res.render(`my-tickets`, {offers});
   logger.info(`Status code ${res.statusCode}`);
 });
 
-appRouter.get(`/my/comments`, (req, res) => {
-  res.render(`comments`);
+appRouter.get(`/my/comments`, async (req, res) => {
+  let offers = [];
+
+  try {
+    offers = (await axios.get(`${URL}/api/offers`)).data.splice(0, 3);
+  } catch (err) {
+    logger.error(`Ошибка при получении списка предложений`);
+  }
+
+  res.render(`comments`, {offers});
   logger.info(`Status code ${res.statusCode}`);
 });
 
-appRouter.get(`/search`, (req, res) => {
-  res.render(`search-result`);
+appRouter.get(`/search`, async (req, res) => {
+  let offers = [];
+  try {
+    offers = (await axios.get(`${URL}/api/search/?query=${encodeURIComponent(req.query.search)}`)).data;
+  } catch (err) {
+    logger.error(`Ошибка при получении списка предложений`);
+  }
+
+  res.render(`search-result`, {offers});
   logger.info(`Status code ${res.statusCode}`);
 });
 
