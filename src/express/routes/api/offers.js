@@ -31,22 +31,15 @@ route.get(`/:offerId`, async (req, res) => {
 
 // POST / api / offers — создаёт новое объявление;
 route.post(`/`, async (req, res) => {
+  const offer = req.body;
   const keys = [
     `type`,
     `title`,
     `description`,
     `sum`,
-    `picture`,
-    `category`
+    // `picture`,
+    `category`,
   ];
-
-  let offer = {};
-  try {
-    offer = JSON.parse(req.fields);
-  } catch (err) {
-    logger.error(`Ошибка при парсинге данных нового объявления: ${err}`);
-    return;
-  }
 
   for (const key of keys) {
     if (!offer[key]) {

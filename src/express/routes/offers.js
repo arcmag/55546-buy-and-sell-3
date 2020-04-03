@@ -1,12 +1,21 @@
 'use strict';
 
-// const fs = require(`fs`).promises;
 const router = require(`express`).Router;
 const route = router();
 const logger = require(`../../logger`).getLogger();
+const path = require(`path`);
 const axios = require(`axios`);
 
-// const URL = `http://localhost:3000`;
+const multer = require(`multer`);
+const multerStorage = multer.diskStorage({
+  destination(req, file, cb) {
+    cb(null, path.join(__dirname, `../../tmp`));
+  },
+  filename(req, file, cb) {
+    cb(null, file.originalname);
+  }
+});
+
 const {getUrlRequest} = require(`../../utils`);
 
 route.get(`/category/:id`, (req, res) => {
@@ -27,20 +36,25 @@ route.get(`/add`, async (req, res) => {
   logger.info(`Status code ${res.statusCode}`);
 });
 
-route.post(`/add`, async (req, res) => {
-  const {fields, files} = req;
+route.post(`/add`, multer({storage: multerStorage}).single(`avatar`), async (req, res) => {
+  const {body} = req;
 
   try {
     const offer = {
-      title: fields[`ticket-name`],
-      description: fields.comment,
-      category: fields[`category[]`],
-      sum: fields.price,
-      type: fields.action,
-      picture: files.avatar.path,
+      title: body[`ticket-name`],
+      description: body.comment,
+      category: body.category,
+      sum: body.price,
+      type: body.action,
+      // picture: files.avatar.path,
     };
 
-    await axios.post(getUrlRequest(req, `/api/offers`), JSON.stringify(offer));
+    await axios.post(getUrlRequest(req, `/api/offers`), JSON.stringify(offer), {
+      headers: {
+        'Content-Type': `application/json`
+      }
+    });
+
     res.redirect(`/my`);
     logger.info(`Status code ${res.statusCode}`);
     return;
@@ -50,11 +64,11 @@ route.post(`/add`, async (req, res) => {
 
   res.render(`new-ticket`, {
     offer: {
-      title: fields[`ticket-name`] || ``,
-      description: fields.comment || ``,
-      category: fields.category || ``,
-      sum: fields.price || ``,
-      type: fields.action || ``,
+      title: body[`ticket-name`] || ``,
+      description: body.comment || ``,
+      category: body.category || ``,
+      sum: body.price || ``,
+      type: body.action || ``,
     },
   });
   logger.info(`Status code ${res.statusCode}`);

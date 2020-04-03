@@ -42,6 +42,7 @@
     "chalk": "3.0.0",
     "express": "4.17.1",
     "express-formidable": "1.2.0",
+    "multer": "^1.4.2",
     "nanoid": "^2.1.11",
     "pino": "5.17.0",
     "pug": "2.0.4",
