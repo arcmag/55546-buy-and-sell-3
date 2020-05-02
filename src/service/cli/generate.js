@@ -3,7 +3,7 @@
 const chalk = require(`chalk`);
 const nanoid = require(`nanoid`);
 const fs = require(`fs`).promises;
-const {getRandomInt, shuffle} = require(`../../utils`);
+const {getRandomInt, shuffle, getOfferData} = require(`../../utils`);
 
 const EXIT_CODE_ERROR = 1;
 const DEFAULT_COUNT = 1;
@@ -27,8 +27,6 @@ const ItemImgCount = {
   max: 16,
 };
 
-const getDataByFile = async (path) => (await fs.readFile(path)).toString().trim().split(`\n`);
-
 module.exports = {
   name: `--generate`,
   async run(count) {
@@ -37,11 +35,7 @@ module.exports = {
       process.exit(EXIT_CODE_ERROR);
     }
 
-    const titles = await getDataByFile(`data/titles.txt`);
-    const sentences = await getDataByFile(`data/sentences.txt`);
-    const categories = await getDataByFile(`data/categories.txt`);
-    const comments = await getDataByFile(`data/comments.txt`);
-
+    const {titles, sentences, categories, comments} = await getOfferData();
     const mockData = Array.from({length: +(count || DEFAULT_COUNT)}, () => ({
       id: nanoid(),
       type: OfferType[getRandomInt(0, 1) ? `offer` : `sale`],
