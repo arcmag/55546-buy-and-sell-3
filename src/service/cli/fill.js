@@ -4,7 +4,6 @@ const fs = require(`fs`).promises;
 const GeneratorHelper = require(`../../GeneratorHelper`);
 
 const chalk = require(`chalk`);
-const nanoid = require(`nanoid`);
 const {getOfferData} = require(`../../utils`);
 
 const EXIT_CODE_ERROR = 1;
