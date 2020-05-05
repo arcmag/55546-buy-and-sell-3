@@ -1,7 +1,7 @@
 'use strict';
 const fs = require(`fs`).promises;
 
-const GeneratorHelper = require(`../../GeneratorHelper`);
+const GeneratorHelper = require(`src/generator-helper`);
 
 const chalk = require(`chalk`);
 const {getOfferData} = require(`../../utils`);
