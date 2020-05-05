@@ -1,7 +1,7 @@
 'use strict';
 const fs = require(`fs`).promises;
 
-const GeneratorHelper = require(`src/generator-helper`);
+const GeneratorHelper = require(`../../generator-helper`);
 
 const chalk = require(`chalk`);
 const {getOfferData} = require(`../../utils`);
@@ -45,18 +45,18 @@ module.exports = {
 
     const user = generator.createUser({
       id: 1,
-      avatar: 'avatar.jpg',
-      name: 'Bob',
-      email: 'bob@mail.ru',
-      password: '123456'
+      avatar: `avatar.jpg`,
+      name: `Bob`,
+      email: `bob@mail.ru`,
+      password: `123456`
     });
 
     const user2 = generator.createUser({
       id: 2,
-      avatar: 'avatar02.jpg',
-      name: 'Rob',
-      email: 'rob@mail.ru',
-      password: '123456'
+      avatar: `avatar02.jpg`,
+      name: `Rob`,
+      email: `rob@mail.ru`,
+      password: `123456`
     });
 
     const offerConfig = {
@@ -69,9 +69,9 @@ module.exports = {
     };
 
     const halfOffersCount = parseInt(DEFAULT_OFFER_COUNT / 2, 10);
-    const offers = Array.from({length: +(count || DEFAULT_OFFER_COUNT)}, (_it, idx) =>
-      generator.createOffer((idx > halfOffersCount ? user2 : user).id, {...offerConfig, id: idx + 1})
-    );
+    for (let i = 0; i < +(count || DEFAULT_OFFER_COUNT); i++) {
+      generator.createOffer((i > halfOffersCount ? user2 : user).id, {...offerConfig, id: i + 1});
+    }
 
     try {
       await fs.writeFile(FILE_NAME, generator.generateSql());

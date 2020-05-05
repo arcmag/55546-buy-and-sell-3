@@ -1,3 +1,5 @@
+'use strict';
+
 const {getRandomInt, shuffle} = require(`./utils`);
 
 const CategoryCode = {
@@ -66,7 +68,7 @@ module.exports = class GeneratorHelper {
 
   offerAddComments(offer_id, author_id, config) {
     const offerComments = Array.from({length: getRandomInt(config.commentsCount.min,
-          config.commentsCount.max)}, (_it, idx) => ({
+        config.commentsCount.max)}, (_it, idx) => ({
       id: idx + this.comments.length + 1,
       author_id,
       offer_id,
@@ -79,7 +81,7 @@ module.exports = class GeneratorHelper {
 
   createStringSql(table, rows, data) {
     return `INSERT INTO ${table} (${rows}) VALUES\r ${data.map((it, idx, arr) =>
-      `\t(${it})${(idx + 1 !== arr.length ? `,` : ';')}\r`).join(``)}\r\r`;
+      `\t(${it})${(idx + 1 !== arr.length ? `,` : `;`)}\r`).join(``)}\r\r`;
   }
 
   generateSql() {
@@ -87,21 +89,21 @@ module.exports = class GeneratorHelper {
     let result = ``;
 
     result += this.createStringSql(`categories`, [`id`, `name`, `code`],
-      categories.map(({id, name, code}) => [id, `'${name}'`, `'${code}'`]));
+        categories.map(({id, name, code}) => [id, `'${name}'`, `'${code}'`]));
 
-    result += this.createStringSql(`users`,[`id`, `avatar`, `name`, `email`, `password`],
-      users.map(({id, avatar, name, email, password}) =>
-        [id, `'${avatar}'`, `'${name}'`, `'${email}'`, `'${password}'`]));
+    result += this.createStringSql(`users`, [`id`, `avatar`, `name`, `email`, `password`],
+        users.map(({id, avatar, name, email, password}) =>
+          [id, `'${avatar}'`, `'${name}'`, `'${email}'`, `'${password}'`]));
 
     result += this.createStringSql(`offers`, [`id`, `title`, `img`, `price`, `type`, `description`, `author_id`],
-      offers.map(({id, title, img, price, type, description, author_id}) =>
-        [id, `'${title}'`, `'${img}'`, `'${price}'`, `'${type}'`, `'${description}'`, `'${author_id}'`]));
+        offers.map(({id, title, img, price, type, description, author_id}) =>
+          [id, `'${title}'`, `'${img}'`, `'${price}'`, `'${type}'`, `'${description}'`, `'${author_id}'`]));
 
     result += this.createStringSql(`offers_category`, [`id`, `offer_id`, `category_id`],
-      offersCategory.map(({id, offer_id, category_id}) => [id, offer_id, category_id]));
+        offersCategory.map(({id, offer_id, category_id}) => [id, offer_id, category_id]));
 
     result += this.createStringSql(`comments`, [`id`, `author_id`, `offer_id`, `text`],
-      comments.map(({id, author_id, offer_id, text}) => [id, author_id, offer_id, `'${text}'`]));
+        comments.map(({id, author_id, offer_id, text}) => [id, author_id, offer_id, `'${text}'`]));
 
     return result;
   }
