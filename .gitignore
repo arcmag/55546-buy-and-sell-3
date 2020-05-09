@@ -18,3 +18,5 @@ mock.json
 
 src/service/logs
 src/tmp/**/*
+
+.env
