@@ -4,8 +4,8 @@
 
 ## Для работы с PostgreSQL
 
-`PGPORT` - порт, по умолчанию - 5432
-`PGHOST` - хост, по умолчанию - 'localhost'
-`PGUSER` - пользователь
-`PGDATABASE` - база данных
-`PGPASSWORD` - пароль
+`DB_PGPORT` - порт, по умолчанию - 5432
+`DB_PGHOST` - хост, по умолчанию - 'localhost'
+`DB_PGUSER` - пользователь
+`DB_PGDATABASE` - база данных
+`DB_PGPASSWORD` - пароль

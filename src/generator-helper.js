@@ -97,7 +97,7 @@ module.exports = class GeneratorHelper {
 
     result += this.createStringSql(`offers`, [`id`, `title`, `img`, `price`, `type`, `description`, `author_id`],
         offers.map(({id, title, img, price, type, description, author_id}) =>
-          [id, `'${title}'`, `'${img}'`, `'${price}'`, `'${type}'`, `'${description}'`, `'${author_id}'`]));
+          [id, `'${title}'`, `'${img}'`, `'${price}'`, `'${type}'`, `'${description}'`, author_id]));
 
     result += this.createStringSql(`offers_category`, [`id`, `offer_id`, `category_id`],
         offersCategory.map(({id, offer_id, category_id}) => [id, offer_id, category_id]));

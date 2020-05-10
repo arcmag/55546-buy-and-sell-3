@@ -18,9 +18,9 @@ const getPort = () => {
 module.exports = {
   name: `--server`,
   async run() {
-    const dataDb = await db();
-    if (!dataDb) {
-      logger.error(`Прекращение работы`);
+    const dbPool = await db();
+    if (!dbPool) {
+      logger.error(`Завершение работы из за проблем соединения с БД`);
       process.exit(1);
     }
 
