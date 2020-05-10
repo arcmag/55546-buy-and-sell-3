@@ -25,6 +25,7 @@ module.exports = {
     }
 
     app.listen(getPort(), () => {
+      app.set(`db`, dbPool);
       logger.info(`Запуск сервера`);
     }).on(`error`, (err) => {
       logger.error(`Server can't start. Error: ${err}`);

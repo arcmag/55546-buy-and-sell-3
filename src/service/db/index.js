@@ -16,8 +16,11 @@ module.exports = async () => {
   logger.info(`Подключение к БД`);
 
   try {
-    await pool.connect();
+    const client = await pool.connect();
     logger.info(`Соединение установлено`);
+
+    client.release();
+
     return pool;
   } catch (err) {
     logger.error(`Ошибка при подключении к БД: ${err}`);
