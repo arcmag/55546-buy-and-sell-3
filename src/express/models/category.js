@@ -1,23 +1,20 @@
 'use strict';
 
 module.exports = (sequelize, DataTypes) => {
-  class User extends sequelize.Sequelize.Model { }
-  User.init({
+  class Category extends sequelize.Sequelize.Model { }
+  Category.init({
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true
     },
-    avatar: DataTypes.STRING,
     name: DataTypes.STRING,
-    email: DataTypes.STRING,
-    password: DataTypes.STRING,
+    code: DataTypes.STRING,
   }, {
     sequelize,
-    modelName: `user`,
-    tableName: `users`,
+    tableName: `categories`,
     timestamps: false
   });
 
-  return User;
+  return Category;
 };

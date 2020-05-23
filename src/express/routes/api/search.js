@@ -1,19 +1,19 @@
 'use strict';
 
-const fs = require(`fs`).promises;
-const router = require(`express`).Router;
-const route = router();
-
-const getOffers = async () => JSON.parse((await fs.readFile(`mock.json`)).toString());
-
 const logger = require(`../../../logger`).getLogger();
+const {Router} = require(`express`);
 
-// GET / api / search ? query = — возвращает результаты поиска.
-// Поиск объявлений выполняется по наименованию.Объявление соответствует поиску в случае наличия хотя бы одного вхождения искомой фразы.
-route.get(`/`, async (req, res) => {
-  res.json((await getOffers()).filter((it) => it.title.toLowerCase().includes(req.query.query.toLowerCase())));
-  logger.info(`Status code ${res.statusCode}`);
-  return;
-});
+const route = new Router();
 
-module.exports = route;
+module.exports = (app, ClassService) => {
+  logger.info(`Подключение search api`);
+  const service = new ClassService();
+
+  app.use(`/api/search`, route);
+
+  route.get(`/`, async (req, res) => {
+    const {query} = req.query;
+    logger.info(`Получение списка предложений по заголовку ${query}`);
+    res.status(200).json(await service.search(query));
+  });
+};

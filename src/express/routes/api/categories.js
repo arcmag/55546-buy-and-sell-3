@@ -1,17 +1,18 @@
 'use strict';
 
-const fs = require(`fs`).promises;
-const router = require(`express`).Router;
-const route = router();
 const logger = require(`../../../logger`).getLogger();
+const {Router} = require(`express`);
 
-const getDataByFile = async (path) => (await fs.readFile(path)).toString().trim().split(`\n`);
+const route = new Router();
 
-// GET / api / categories — возвращает список категорий;
-route.get(`/`, async (req, res) => {
-  res.json(await getDataByFile(`data/categories.txt`));
-  logger.info(`Status code ${res.statusCode}`);
-  return;
-});
+module.exports = (app, ClassService) => {
+  logger.info(`Подключение service api`);
+  const service = new ClassService();
 
-module.exports = route;
+  app.use(`/api/categories`, route);
+
+  route.get(`/`, async (_req, res) => {
+    logger.info(`Получение списка категорий`);
+    res.status(200).json(await service.findAll());
+  });
+};

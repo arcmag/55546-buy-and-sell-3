@@ -17,8 +17,8 @@ block content
                 .ticket-card__info
                   span.ticket-card__label= offer.type === `sale` ? `Продам` : `Куплю`
                   .ticket-card__categories
-                    each category in offer.category
-                      a(href='#')= category
+                    //- each category in offer.category
+                    //-   a(href='#')= category
                   .ticket-card__header
                     h3.ticket-card__title
                       a(href='#')=offer.title

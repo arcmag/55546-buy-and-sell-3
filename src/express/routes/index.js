@@ -57,15 +57,19 @@ appRouter.get(`/my/comments`, async (req, res) => {
 });
 
 appRouter.get(`/search`, async (req, res) => {
+  const {search} = req.query;
   let offers = [];
-  try {
-    offers = (await axios.get(getUrlRequest(req, `/api/search/?query=${encodeURIComponent(req.query.search)}`))).data;
-  } catch (err) {
-    logger.error(`Ошибка при получении списка предложений`);
+
+  if (search) {
+    try {
+      offers = (await axios.get(getUrlRequest(req, `/api/search/?query=${encodeURIComponent(req.query.search)}`))).data;
+    } catch (err) {
+      logger.error(`Ошибка при получении списка предложений`);
+    }
   }
 
   res.render(`search-result`, {offers});
-  logger.info(`Status code ${res.statusCode}`);
+  logger.info(`Поиск завершён: ${res.statusCode}`);
 });
 
 module.exports = appRouter;

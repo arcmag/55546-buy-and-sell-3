@@ -24,9 +24,9 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(`/api/categories`, require(`./routes/api/categories`));
-app.use(`/api/search`, require(`./routes/api/search`));
-app.use(`/api/offers`, require(`./routes/api/offers`));
+require(`./routes/api/categories`)(app, require(`../service/data-service/category`));
+require(`./routes/api/search`)(app, require(`../service/data-service/offer`));
+require(`./routes/api/offers`)(app, require(`../service/data-service/offer`));
 
 app.use(`/offers`, require(`./routes/offers`));
 app.use(appRoutes);
