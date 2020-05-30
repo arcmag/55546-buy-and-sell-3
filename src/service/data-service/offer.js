@@ -1,68 +1,71 @@
 'use strict';
 
-// const fs = require(`fs`).promises;
-const {Op} = require(`sequelize`);
 const sequelize = require(`../db/sequelize`);
-
-// const getOffers = async () => JSON.parse((await fs.readFile(`mock.json`)).toString());
 
 class OfferService {
   async findAll() {
     const {Offer} = (await sequelize()).models;
-    return await Offer.findAll();
+    return (await Offer.findAll({include: [`comments`, `categories`]}))
+      .map((offer) => offer.toJSON());
+  }
+
+  async findAllByUser(userId) {
+    const {Offer, Comment} = (await sequelize()).models;
+    return (await Offer.findAll({
+      include: [
+        {
+          model: Comment,
+          as: `comments`,
+          include: [`author`]
+        },
+        `categories`
+      ],
+      where: {author_id: userId}
+    })).map((offer) => offer.toJSON());
+  }
+
+  async findAllByCategory(id) {
+    const {Offer, OfferCategory} = (await sequelize()).models;
+    return (await Offer.findAll({
+      include: [`categories`],
+      where: {
+        id: await OfferCategory.findAll({
+          where: {category_id: id},
+          attributes: [`offer_id`],
+          raw: true
+        }).map(({ offer_id }) => +offer_id)
+      }
+    })).map((offer) => offer.toJSON());
   }
 
   async findOne(id) {
-    const {Offer} = (await sequelize()).models;
-    return await Offer.findByPk(+id);
-  }
-
-  async findComment(offerId, commentId) {
-    const offer = await this.findOne(offerId);
-    return offer ? offer.comments.find((it) => it.id === commentId) : null;
+    const {Offer, Comment} = (await sequelize()).models;
+    return await Offer.findByPk(+id, {
+      include: [
+        {
+          model: Comment,
+          as: `comments`,
+          include: [`author`]
+        },
+        `categories`,
+        `author`
+      ]
+    });
   }
 
   async create(data) {
-    return data;
+    const {Offer} = (await sequelize()).models;
+    return await Offer.create(data);
   }
 
   async update(id, data) {
-    const offer = await this.findOne(id);
-    if (!offer) {
-      return false;
-    }
-
-    return true;
-  }
-
-  async drop(id) {
-    const offer = await this.findOne(id);
-    if (!offer) {
-      return false;
-    }
-
-    return true;
-  }
-
-  async dropComment(offerId, commentId) {
-    const comment = await this.findComment(offerId, commentId);
-    if (!comment) {
-      return false;
-    }
-
-    return true;
-  }
-
-  async search(title) {
     const {Offer} = (await sequelize()).models;
-    return await Offer.findAll({
-      raw: true,
-      where: {
-        title: {
-          [Op.like]: `%${title}%`
-        }
-      }
-    });
+    return await Offer.update(data, {where: {id}});
+  }
+
+  async delete(id) {
+    const {Offer} = (await sequelize()).models;
+    return await Offer.destroy({where: {id}});
   }
 }
 

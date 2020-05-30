@@ -7,10 +7,8 @@ const route = new Router();
 
 let service;
 
-const reqiredFields = [`type`, `title`, `description`, `sum`, `category`];
-
-const validateExistValue = (data) =>
-  reqiredFields.reduce((list, key) => [...list, ...(data[key] ? [`Пустое поле: ${key}`] : [])], []);
+const validateExistValue = (data, fileds) =>
+  fileds.reduce((list, key) => [...list, ...(!data[key] ? [`Пустое поле: ${key} `] : [])], []);
 
 const getOffer = async (res, offerId) => {
   const offer = await service.findOne(offerId);
@@ -44,18 +42,29 @@ module.exports = async (app, ClassService) => {
     res.json(offer);
   });
 
+  // GET / api / offers / user /: userId — возвращает список объявлений созданных указанным пользователем
+  route.get(`/user/:userId`, async (req, res) => {
+    res.json(await service.findAllByUser(req.params.userId));
+  });
+
+  // GET / api / offers / category /: categoryId — возвращает список объявлений относящихся к указанной категории
+  route.get(`/category/:categoryId`, async (req, res) => {
+    res.json(await service.findAllByCategory(req.params.categoryId));
+  });
+
   // POST / api / offers — создаёт новое объявление;
   route.post(`/`, async (req, res) => {
     const data = req.body;
-    const errors = validateExistValue(data);
+    const errors = validateExistValue(data, [`type`, `title`, `description`, `price`, `categories`]);
     if (errors.length > 0) {
+      logger.info(`Не удалось создать новое объявление:\n ${errors}`);
       res.json({response: `Не удалось создать новое объявление:\n ${errors}`});
       return;
     }
 
     try {
-      await service.create(data);
-      res.json({response: `Создано новое объявление`});
+      const offer = await service.create(data);
+      res.json(offer.dataValues);
       logger.info(`Создано новое объявление`);
     } catch (err) {
       res.status(400).json(`Ошибка при создании нового объявления: ${err}`);
@@ -66,15 +75,16 @@ module.exports = async (app, ClassService) => {
   route.put(`/:offerId`, async (req, res) => {
     const {offerId} = req.params;
     const data = req.body;
-    const errors = validateExistValue(data);
+    const errors = validateExistValue(data, [`type`, `title`, `description`, `price`]);
     if (errors.length > 0) {
+      logger.info(`Не удалось создать новое объявление:\n ${errors}`);
       res.json({response: `Не удалось создать новое объявление:\n ${errors}`});
       return;
     }
 
     try {
-      await service.update(offerId, data);
-      res.json({response: `Редактирование объявления ${offerId} завершено успешно.`});
+      const offer = await service.update(offerId, data);
+      res.json(offer.dataValues);
       logger.info(`Редактирование объявления завершено`);
     } catch (err) {
       res.status(400).json(`Ошибка при редактирование объявления: ${err}`);
@@ -93,47 +103,5 @@ module.exports = async (app, ClassService) => {
       res.json({response: `Ошибка при удалении объявления: ${err}`});
       logger.info(`Ошибка при удалении объявления: ${err}`);
     }
-  });
-
-  // GET / api / offers /: offerId / comments — возвращает список комментариев определённого объявления;
-  route.get(`/:offerId/comments`, async (req, res) => {
-    const offer = await getOffer(res, req.params.offerId);
-    if (!offer) {
-      return;
-    }
-
-    res.json(offer.comments);
-    logger.info(`Получение комментариев к предложению - ${offer.id}`);
-  });
-
-  // DELETE / api / offers /: offerId / comments /: commentId — удаляет из определённой публикации комментарий с идентификатором;
-  route.delete(`/:offerId/comments/:commentId`, async (req, res) => {
-    const {offerId, commentId} = req.params;
-    const comment = await service.findComment(offerId, commentId);
-    if (!comment) {
-      logger.error(`Ошибка при получени в предложении ${offerId} комментария ${commentId}`);
-      return;
-    }
-
-    res.json({response: `Delete comment by id ${commentId}!`});
-    logger.info(`Комментарий ${commentId} был удалён`);
-  });
-
-  // PUT / api / offers /: offerId / comments — создаёт новый комментарий;
-  route.post(`/:offerId/comments`, async (req, res) => {
-    const offer = await getOffer(res, req.params.offerId);
-    if (!offer) {
-      return;
-    }
-
-    const {id, text} = req.body;
-    if (!id || !text) {
-      res.sendStatus(400);
-      logger.info(`Status code ${res.statusCode}`);
-      return;
-    }
-
-    res.json({response: `Create comment!`, data: req.body});
-    logger.info(`Status code ${res.statusCode}`);
   });
 };

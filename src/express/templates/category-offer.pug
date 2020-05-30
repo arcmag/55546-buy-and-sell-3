@@ -1,0 +1,54 @@
+extends layouts/layout.pug
+
+block content
+  main.page-content
+    section.categories-list
+      h1.visually-hidden Сервис объявлений "Куплю - продам"
+      ul.categories-list__wrapper
+        each category in categories
+          li.categories-list__item
+            a.category-tile(href=`/offers/category/${category.id}`)
+              span.category-tile__image
+                img(src=`/img/${category.code}.jpg`, srcset=`/img/${category.code}@2x.jpg 2x`, alt=`Иконка категории: ${category.name}`)
+              span.category-tile__label= category.name
+                span.category-tile__qty.js-qty= category.offersCount
+    section.tickets-list
+      h2.visually-hidden Предложения из категории #{currentCategory.name}
+      .tickets-list__wrapper
+        .tickets-list__header
+          p.tickets-list__title
+            | #{currentCategory.name}
+            b.js-qty= currentCategory.offersCount
+        ul
+          each offer in offers
+            li.tickets-list__item
+              .ticket-card.ticket-card--color06
+                .ticket-card__img
+                  img(src=`/img/${offer.img}`, alt=`Изображение товара: ${offer.title}`)
+                .ticket-card__info
+                  span.ticket-card__label= offer.type === `buy` ? `КУПЛЮ` : `ПРОДАМ`
+                  .ticket-card__categories
+                    each category in offer.categories
+                      a(href= `offers/category/${category.id}`)= category.name
+                  .ticket-card__header
+                    h3.ticket-card__title
+                      a(href='#')= offer.title
+                    p.ticket-card__price
+                      span.js-sum= offer.price
+                      |  ₽
+                  .ticket-card__desc
+                    p= offer.description
+        .tickets-list__pagination
+          ul.pagination
+            li
+              a.active(href='#') 1
+            li
+              a(href='#') 2
+            li
+              a(href='#') 3
+            li
+              a(href='#') 4
+            li
+              a(href='#') 5
+            li
+              a(href='#') дальше

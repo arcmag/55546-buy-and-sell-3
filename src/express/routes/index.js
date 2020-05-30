@@ -8,15 +8,17 @@ const {getUrlRequest} = require(`../../utils`);
 
 appRouter.get(`/`, async (req, res) => {
   let offers = [];
+  let categories = [];
 
   try {
     offers = (await axios.get(getUrlRequest(req, `/api/offers`))).data;
+    categories = (await axios.get(getUrlRequest(req, `/api/categories`))).data;
   } catch (err) {
     logger.error(`Ошибка при получении списка объявлений`);
     return;
   }
 
-  res.render(`index`, {offers});
+  res.render(`index`, {offers, categories});
   logger.info(`Status code ${res.statusCode}`);
 });
 
@@ -34,12 +36,12 @@ appRouter.get(`/my`, async (req, res) => {
   let offers = [];
 
   try {
-    offers = (await axios.get(getUrlRequest(req, `/api/offers`))).data;
+    offers = (await axios.get(getUrlRequest(req, `/api/offers/user/1`))).data;
   } catch (err) {
     logger.error(`Ошибка при получении списка предложений`);
   }
 
-  res.render(`my-tickets`, {offers});
+  res.render(`my-offers`, {offers});
   logger.info(`Status code ${res.statusCode}`);
 });
 
@@ -47,7 +49,7 @@ appRouter.get(`/my/comments`, async (req, res) => {
   let offers = [];
 
   try {
-    offers = (await axios.get(getUrlRequest(req, `/api/offers`))).data.splice(0, 3);
+    offers = (await axios.get(getUrlRequest(req, `/api/offers/user/1`))).data.splice(0, 3);
   } catch (err) {
     logger.error(`Ошибка при получении списка предложений`);
   }

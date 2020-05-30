@@ -1,18 +1,19 @@
 'use strict';
 
-const fs = require(`fs`).promises;
-const getDataByFile = async (path) => (await fs.readFile(path)).toString().trim().split(`\n`);
-
-const getOffers = async () => JSON.parse((await fs.readFile(`mock.json`)).toString());
+const {Op} = require(`sequelize`);
+const sequelize = require(`../db/sequelize`);
 
 class CategoryService {
-  constructor(offers) {
-    this._offers = offers;
-  }
-
-  async findAll() {
-    res.json((await getOffers()).filter((it) => it.title.toLowerCase().includes(req.query.query.toLowerCase())));
-    return await getDataByFile(`data/categories.txt`);
+  async search(title) {
+    const {Offer} = (await sequelize()).models;
+    return await Offer.findAll({
+      raw: true,
+      where: {
+        title: {
+          [Op.like]: `%${title}%`
+        }
+      }
+    });
   }
 }
 
