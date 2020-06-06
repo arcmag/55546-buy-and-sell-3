@@ -7,8 +7,8 @@ const route = new Router();
 
 let service;
 
-const validateExistValue = (data, fileds) =>
-  fileds.reduce((list, key) => [...list, ...(!data[key] ? [`Пустое поле: ${key} `] : [])], []);
+const validateExistValue = (data, fields) =>
+  fields.reduce((list, key) => [...list, ...(!data[key] ? [`Пустое поле: ${key} `] : [])], []);
 
 const getOffer = async (res, offerId) => {
   const offer = await service.findOne(offerId);
@@ -32,6 +32,16 @@ module.exports = async (app, ClassService) => {
     res.status(200).json(await service.findAll());
   });
 
+  route.get(`/last`, async (req, res) => {
+    logger.info(`Получение списка последних предложений`);
+    res.status(200).json(await service.findLast());
+  });
+
+  route.get(`/popular`, async (req, res) => {
+    logger.info(`Получение наиболее популярных предложений`);
+    res.status(200).json(await service.findByPopular());
+  });
+
   // GET / api / offers /: offerId — возвращает полную информацию определённого объявления;
   route.get(`/:offerId`, async (req, res) => {
     const offer = await getOffer(res, req.params.offerId);
@@ -48,8 +58,12 @@ module.exports = async (app, ClassService) => {
   });
 
   // GET / api / offers / category /: categoryId — возвращает список объявлений относящихся к указанной категории
-  route.get(`/category/:categoryId`, async (req, res) => {
-    res.json(await service.findAllByCategory(req.params.categoryId));
+  route.get(`/category/:categoryId/:page`, async (req, res) => {
+    const {categoryId, page} = req.params;
+    res.json({
+      offers: (await service.findAllByCategory(categoryId, (page || 1))),
+      offersCount: (await service.getCountByCategory(categoryId))
+    });
   });
 
   // POST / api / offers — создаёт новое объявление;
@@ -96,7 +110,7 @@ module.exports = async (app, ClassService) => {
   route.delete(`/:offerId`, async (req, res) => {
     const {offerId} = req.params;
     try {
-      await service.drop(offerId);
+      await service.delete(offerId);
       res.json({response: `Delete offer by id: ${offerId}!`});
       logger.info(`Объявления удалено`);
     } catch (err) {

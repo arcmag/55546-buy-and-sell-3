@@ -5,6 +5,8 @@ const route = router();
 const logger = require(`../../logger`).getLogger();
 const path = require(`path`);
 const axios = require(`axios`);
+const {pagination} = require(`../../utils`);
+const {CATEGORY_LIMIT} = require(`../../const`);
 
 const multer = require(`multer`);
 const multerStorage = multer.diskStorage({
@@ -19,6 +21,7 @@ const multerStorage = multer.diskStorage({
 const {getUrlRequest} = require(`../../utils`);
 
 route.get(`/category/:id`, async (req, res) => {
+  const currentPage = req.query.page || 1;
   const {id} = req.params;
   logger.info(`Просмотр списка предложений из категории: ${id}`);
 
@@ -36,14 +39,19 @@ route.get(`/category/:id`, async (req, res) => {
     logger.info(`Ошибка при получении категорий: ${id}: ${err}`);
   }
 
-  let offers = [];
+  let offersData = {offers: [], offersCount: 0};
   try {
-    offers = (await axios.get(getUrlRequest(req, `/api/offers/category/${id}`))).data;
+    offersData = (await axios.get(getUrlRequest(req, `/api/offers/category/${id}/${currentPage}`))).data;
   } catch (err) {
-    logger.info(`Ошибка при получении предложений к категории: ${id}: ${err}`);
+    logger.info(`Ошибка при получении предложений в данной категории: ${id}: ${err}`);
   }
 
-  res.render(`category-offer`, {offers, categories, currentCategory});
+  res.render(`category-offer`, {
+    categories,
+    currentCategory,
+    offers: offersData.offers,
+    pagination: pagination(offersData.offersCount, CATEGORY_LIMIT, +currentPage)
+  });
 });
 
 route.get(`/add`, async (req, res) => {
@@ -73,7 +81,7 @@ route.post(`/add`, multer({storage: multerStorage}).single(`avatar`), async (req
     logger.error(`Ошибка при получении списка категорий`);
   }
   try {
-    const offer = await axios.post(getUrlRequest(req, `/api/offers`), JSON.stringify({...body, author_id: 1}),
+    const offer = await axios.post(getUrlRequest(req, `/api/offers`), JSON.stringify({...body, 'author_id': 1}),
         {headers: {'Content-Type': `application/json`}});
 
     await axios.post(getUrlRequest(req, `/api/categories/set-offer-categories`),
@@ -87,7 +95,6 @@ route.post(`/add`, multer({storage: multerStorage}).single(`avatar`), async (req
   }
 
   res.render(`offer-create`, {categories, offer: body});
-  logger.info(`Status code ${res.statusCode}`);
 });
 
 route.get(`/edit/:id`, async (req, res) => {
@@ -138,7 +145,7 @@ route.post(`/edit/:id`, multer({storage: multerStorage}).single(`avatar`), async
 
   let offer = {};
   try {
-    offer = (await axios.get(getUrlRequest(req, `/api/offers/${req.params.id}`))).data;
+    offer = (await axios.get(getUrlRequest(req, `/api/offers/${params.id}`))).data;
   } catch (err) {
     logger.error(`Ошибка при получении предложения`);
   }

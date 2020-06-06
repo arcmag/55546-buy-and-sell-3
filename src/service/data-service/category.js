@@ -42,9 +42,9 @@ class CategoryService {
 
   async setOfferCategory(offerId, categories) {
     const {OfferCategory} = (await sequelize()).models;
-    await OfferCategory.destroy({where: {offer_id: +offerId}});
+    await OfferCategory.destroy({where: {'offer_id': +offerId}});
     await OfferCategory.bulkCreate(categories.map(
-        (categoryId) => ({offer_id: +offerId, category_id: +categoryId})));
+        (categoryId) => ({'offer_id': +offerId, 'category_id': +categoryId})));
   }
 }
 

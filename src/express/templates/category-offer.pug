@@ -21,34 +21,16 @@ block content
             b.js-qty= currentCategory.offersCount
         ul
           each offer in offers
-            li.tickets-list__item
-              .ticket-card.ticket-card--color06
-                .ticket-card__img
-                  img(src=`/img/${offer.img}`, alt=`Изображение товара: ${offer.title}`)
-                .ticket-card__info
-                  span.ticket-card__label= offer.type === `buy` ? `КУПЛЮ` : `ПРОДАМ`
-                  .ticket-card__categories
-                    each category in offer.categories
-                      a(href= `offers/category/${category.id}`)= category.name
-                  .ticket-card__header
-                    h3.ticket-card__title
-                      a(href='#')= offer.title
-                    p.ticket-card__price
-                      span.js-sum= offer.price
-                      |  ₽
-                  .ticket-card__desc
-                    p= offer.description
-        .tickets-list__pagination
-          ul.pagination
-            li
-              a.active(href='#') 1
-            li
-              a(href='#') 2
-            li
-              a(href='#') 3
-            li
-              a(href='#') 4
-            li
-              a(href='#') 5
-            li
-              a(href='#') дальше
+            include partials/offer-card.pug
+        if pagination.isActive
+          .tickets-list__pagination
+            ul.pagination
+              if pagination.prev.status
+                li
+                  a(href=`/offers/category/${currentCategory.id}?page=${pagination.prev.page}`) назад
+              each item in pagination.pages
+                li
+                  a(href=`/offers/category/${currentCategory.id}?page=${item.page}`, class=`${item.isActive ? `active` : ``}`)= item.page
+              if pagination.next.status
+                li
+                  a(href=`/offers/category/${currentCategory.id}?page=${pagination.next.page}`) дальше

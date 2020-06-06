@@ -8,6 +8,16 @@ const app = express();
 const logger = require(`../logger`).getLogger();
 const STATIC_DIR = path.join(__dirname, `public`);
 
+const apiCategories = require(`./routes/api/categories`);
+const apiSearch = require(`./routes/api/search`);
+const apiOffers = require(`./routes/api/offers`);
+const apiComments = require(`./routes/api/comments`);
+
+const dataServiceCategory = require(`../service/data-service/category`);
+const dataServiceSearch = require(`../service/data-service/search`);
+const dataServiceOffer = require(`../service/data-service/offer`);
+const dataServiceComment = require(`../service/data-service/comment`);
+
 app.set(`view engine`, `pug`);
 app.set(`views`, path.join(__dirname, `templates`));
 
@@ -24,10 +34,10 @@ app.use((req, res, next) => {
   next();
 });
 
-require(`./routes/api/categories`)(app, require(`../service/data-service/category`));
-require(`./routes/api/search`)(app, require(`../service/data-service/search`));
-require(`./routes/api/offers`)(app, require(`../service/data-service/offer`));
-require(`./routes/api/comments`)(app, require(`../service/data-service/comment`));
+apiCategories(app, dataServiceCategory);
+apiSearch(app, dataServiceSearch);
+apiOffers(app, dataServiceOffer);
+apiComments(app, dataServiceComment);
 
 app.use(`/offers`, require(`./routes/offers`));
 app.use(appRoutes);

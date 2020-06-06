@@ -3,15 +3,15 @@
 module.exports = (sequelize, DataTypes) => {
   class Comment extends sequelize.Sequelize.Model { }
   Comment.init({
-    id: {
+    'id': {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true
     },
-    author_id: DataTypes.INTEGER,
-    offer_id: DataTypes.INTEGER,
-    text: DataTypes.STRING,
-    date_create: DataTypes.DATE,
+    'author_id': DataTypes.INTEGER,
+    'offer_id': DataTypes.INTEGER,
+    'text': DataTypes.STRING,
+    'date_create': DataTypes.DATE,
   }, {
     sequelize,
     tableName: `comments`,
