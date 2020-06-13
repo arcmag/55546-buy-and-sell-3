@@ -20,7 +20,9 @@ const multerStorage = multer.diskStorage({
 
 const {getUrlRequest} = require(`../../utils`);
 
-route.get(`/category/:id`, async (req, res) => {
+const paramValidator = require(`../middleware/validator-params`);
+
+route.get(`/category/:id`, [paramValidator(`id`, `number`)], async (req, res) => {
   const currentPage = req.query.page || 1;
   const {id} = req.params;
   logger.info(`Просмотр списка предложений из категории: ${id}`);
@@ -80,6 +82,7 @@ route.post(`/add`, multer({storage: multerStorage}).single(`avatar`), async (req
   } catch (err) {
     logger.error(`Ошибка при получении списка категорий`);
   }
+
   try {
     const offer = await axios.post(getUrlRequest(req, `/api/offers`), JSON.stringify({...body, 'author_id': 1}),
         {headers: {'Content-Type': `application/json`}});
@@ -91,13 +94,16 @@ route.post(`/add`, multer({storage: multerStorage}).single(`avatar`), async (req
     logger.info(`Создано новое предложение ${offer.data.id}`);
     res.redirect(`/my`);
   } catch (err) {
+    if (err.response && err.response.data) {
+      logger.error(`Ошибка валидации: ${err.response.data.message}`);
+    }
     logger.error(`Ошибка при создании нового объявления: ${err}`);
   }
 
-  res.render(`offer-create`, {categories, offer: body});
+  res.render(`offer-create`, {categories, offer: {categories: [], ...body}});
 });
 
-route.get(`/edit/:id`, async (req, res) => {
+route.get(`/edit/:id`, paramValidator(`id`, `number`), async (req, res) => {
   let offer = {};
   let categories = [];
 
@@ -116,7 +122,10 @@ route.get(`/edit/:id`, async (req, res) => {
   res.render(`offer-edit`, {offer, categories});
 });
 
-route.post(`/edit/:id`, multer({storage: multerStorage}).single(`avatar`), async (req, res) => {
+route.post(`/edit/:id`, [
+  paramValidator(`id`, `number`),
+  multer({storage: multerStorage}).single(`avatar`)
+], async (req, res) => {
   const {file, body, params} = req;
   if (file) {
     body.img = file.filename;
@@ -140,6 +149,9 @@ route.post(`/edit/:id`, multer({storage: multerStorage}).single(`avatar`), async
     logger.info(`Предложение было успешно отредактировано`);
     res.redirect(`/my`);
   } catch (err) {
+    if (err.response && err.response.data) {
+      logger.error(`Ошибка валидации: ${err.response.data.message}`);
+    }
     logger.error(`Ошибка при редактировании предложения: ${err}`);
   }
 
@@ -152,7 +164,7 @@ route.post(`/edit/:id`, multer({storage: multerStorage}).single(`avatar`), async
   res.render(`offer-edit`, {offer, categories});
 });
 
-route.get(`/:id`, async (req, res) => {
+route.get(`/:id`, paramValidator(`id`, `number`), async (req, res) => {
   let offer = {};
   try {
     offer = (await axios.get(getUrlRequest(req, `/api/offers/${req.params.id}`))).data;

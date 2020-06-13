@@ -5,8 +5,8 @@ const request = require(`supertest`);
 const server = require(`../../index`);
 
 describe(`Проверка REST API для работы с объявлениями`, () => {
-  const FAKE_OFFER_ID = `9Gc4QREIT1EiNQQuGD3YU2`;
-  const FAKE_COMMENT_ID = `9Gc4QREIT1EiNQQuGD3YU2`;
+  const FAKE_OFFER_ID = 99999;
+  const FAKE_COMMENT_ID = 99999;
 
   let mockOffer = null;
   let REAL_OFFER_ID = null;

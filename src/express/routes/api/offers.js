@@ -2,6 +2,9 @@
 
 const logger = require(`../../../logger`).getLogger();
 const {Router} = require(`express`);
+const validatorMiddleware = require(`../../middleware/validator-post`);
+const paramValidator = require(`../../middleware/validator-params`);
+const offerSchemaValidator = require(`../../validators/offer`);
 
 const route = new Router();
 
@@ -43,7 +46,7 @@ module.exports = async (app, ClassService) => {
   });
 
   // GET / api / offers /: offerId — возвращает полную информацию определённого объявления;
-  route.get(`/:offerId`, async (req, res) => {
+  route.get(`/:offerId`, paramValidator(`offerId`, `number`), async (req, res) => {
     const offer = await getOffer(res, req.params.offerId);
     if (!offer) {
       return;
@@ -53,12 +56,15 @@ module.exports = async (app, ClassService) => {
   });
 
   // GET / api / offers / user /: userId — возвращает список объявлений созданных указанным пользователем
-  route.get(`/user/:userId`, async (req, res) => {
+  route.get(`/user/:userId`, paramValidator(`userId`, `number`), async (req, res) => {
     res.json(await service.findAllByUser(req.params.userId));
   });
 
   // GET / api / offers / category /: categoryId — возвращает список объявлений относящихся к указанной категории
-  route.get(`/category/:categoryId/:page`, async (req, res) => {
+  route.get(`/category/:categoryId/:page`, [
+    paramValidator(`categoryId`, `number`),
+    paramValidator(`page`, `number`)
+  ], async (req, res) => {
     const {categoryId, page} = req.params;
     res.json({
       offers: (await service.findAllByCategory(categoryId, (page || 1))),
@@ -67,18 +73,12 @@ module.exports = async (app, ClassService) => {
   });
 
   // POST / api / offers — создаёт новое объявление;
-  route.post(`/`, async (req, res) => {
+  route.post(`/`, validatorMiddleware(offerSchemaValidator), async (req, res) => {
     const data = req.body;
-    const errors = validateExistValue(data, [`type`, `title`, `description`, `price`, `categories`]);
-    if (errors.length > 0) {
-      logger.info(`Не удалось создать новое объявление:\n ${errors}`);
-      res.json({response: `Не удалось создать новое объявление:\n ${errors}`});
-      return;
-    }
 
     try {
       const offer = await service.create(data);
-      res.json(offer.dataValues);
+      res.status(200).json(offer.dataValues);
       logger.info(`Создано новое объявление`);
     } catch (err) {
       res.status(400).json(`Ошибка при создании нового объявления: ${err}`);
@@ -86,7 +86,7 @@ module.exports = async (app, ClassService) => {
   });
 
   // PUT / api / offers /: offerId — редактирует определённое объявление;
-  route.put(`/:offerId`, async (req, res) => {
+  route.put(`/:offerId`, paramValidator(`offerId`, `number`), validatorMiddleware(offerSchemaValidator), async (req, res) => {
     const {offerId} = req.params;
     const data = req.body;
     const errors = validateExistValue(data, [`type`, `title`, `description`, `price`]);
@@ -107,7 +107,7 @@ module.exports = async (app, ClassService) => {
   });
 
   // DELETE / api / offers /: offerId — удаляет определённое объявление;
-  route.delete(`/:offerId`, async (req, res) => {
+  route.delete(`/:offerId`, paramValidator(`offerId`, `number`), async (req, res) => {
     const {offerId} = req.params;
     try {
       await service.delete(offerId);

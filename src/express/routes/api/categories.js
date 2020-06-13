@@ -5,6 +5,8 @@ const {Router} = require(`express`);
 
 const route = new Router();
 
+const paramValidator = require(`../../middleware/validator-params`);
+
 module.exports = (app, ClassService) => {
   logger.info(`Подключение service api`);
   const service = new ClassService();
@@ -16,7 +18,7 @@ module.exports = (app, ClassService) => {
     res.status(200).json(await service.findAll());
   });
 
-  route.get(`/:id`, async (req, res) => {
+  route.get(`/:id`, paramValidator(`id`, `number`), async (req, res) => {
     const {id} = req.params;
     logger.info(`Получение категории: ${id}`);
     res.status(200).json(await service.findOne(id));
