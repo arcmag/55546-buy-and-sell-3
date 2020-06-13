@@ -66,7 +66,7 @@ route.get(`/add`, async (req, res) => {
     logger.error(`Ошибка при получении списка категорий`);
   }
 
-  res.render(`offer-create`, {categories, offer: {}});
+  res.render(`offer-create`, {categories, offer: {categories: []}});
 });
 
 route.post(`/add`, multer({storage: multerStorage}).single(`avatar`), async (req, res) => {

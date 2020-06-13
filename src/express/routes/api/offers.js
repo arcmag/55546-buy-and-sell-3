@@ -2,7 +2,7 @@
 
 const logger = require(`../../../logger`).getLogger();
 const {Router} = require(`express`);
-const validatorMiddleware = require(`../../middleware/validator-post`);
+const validatorMiddleware = require(`../../middleware/validator-offer`);
 const paramValidator = require(`../../middleware/validator-params`);
 const offerSchemaValidator = require(`../../validators/offer`);
 
