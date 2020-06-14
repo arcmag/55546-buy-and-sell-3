@@ -13,6 +13,6 @@ module.exports = Joi.object({
   'type': Joi.string().valid(`buy`, `sell`).required(),
   'description': Joi.string(),
   'categories': Joi.array().items(Joi.number()),
-  // 'author_id': Joi.number().required(),
+  'author_id': Joi.number().required(),
   'date_create': Joi.date(),
 });
