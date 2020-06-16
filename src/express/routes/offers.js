@@ -71,6 +71,7 @@ route.get(`/add`, async (req, res) => {
 
 route.post(`/add`, multer({storage: multerStorage}).single(`avatar`), async (req, res) => {
   const {file, body} = req;
+  let errors = null;
 
   if (file) {
     body.img = file.filename;
@@ -95,12 +96,13 @@ route.post(`/add`, multer({storage: multerStorage}).single(`avatar`), async (req
     res.redirect(`/my`);
   } catch (err) {
     if (err.response && err.response.data) {
-      logger.error(`Ошибка валидации: ${err.response.data.message}`);
+      errors = err.response.data.message;
+      logger.error(`Ошибка валидации: ${errors}`);
     }
     logger.error(`Ошибка при создании нового объявления: ${err}`);
   }
 
-  res.render(`offer-create`, {categories, offer: {categories: [], ...body}});
+  res.render(`offer-create`, {categories, offer: {categories: [], ...body}, errors});
 });
 
 route.get(`/edit/:id`, paramValidator(`id`, `number`), async (req, res) => {
@@ -127,6 +129,8 @@ route.post(`/edit/:id`, [
   multer({storage: multerStorage}).single(`avatar`)
 ], async (req, res) => {
   const {file, body, params} = req;
+  let errors = null;
+
   if (file) {
     body.img = file.filename;
   }
@@ -150,7 +154,8 @@ route.post(`/edit/:id`, [
     res.redirect(`/my`);
   } catch (err) {
     if (err.response && err.response.data) {
-      logger.error(`Ошибка валидации: ${err.response.data.message}`);
+      errors = err.response.data.message;
+      logger.error(`Ошибка валидации: ${errors}`);
     }
     logger.error(`Ошибка при редактировании предложения: ${err}`);
   }
@@ -161,7 +166,7 @@ route.post(`/edit/:id`, [
   } catch (err) {
     logger.error(`Ошибка при получении предложения`);
   }
-  res.render(`offer-edit`, {offer, categories});
+  res.render(`offer-edit`, {offer, categories, errors});
 });
 
 route.get(`/:id`, paramValidator(`id`, `number`), async (req, res) => {
