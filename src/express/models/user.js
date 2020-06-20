@@ -3,15 +3,15 @@
 module.exports = (sequelize, DataTypes) => {
   class User extends sequelize.Sequelize.Model { }
   User.init({
-    id: {
+    'id': {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true
     },
-    avatar: DataTypes.STRING,
-    name: DataTypes.STRING,
-    email: DataTypes.STRING,
-    password: DataTypes.STRING,
+    'avatar': DataTypes.STRING,
+    'name': DataTypes.STRING,
+    'email': DataTypes.STRING,
+    'password': DataTypes.STRING,
   }, {
     sequelize,
     tableName: `users`,

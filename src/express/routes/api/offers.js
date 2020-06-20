@@ -10,9 +10,6 @@ const route = new Router();
 
 let service;
 
-const validateExistValue = (data, fields) =>
-  fields.reduce((list, key) => [...list, ...(!data[key] ? [`Пустое поле: ${key} `] : [])], []);
-
 const getOffer = async (res, offerId) => {
   const offer = await service.findOne(offerId);
   if (!offer) {
@@ -89,12 +86,6 @@ module.exports = async (app, ClassService) => {
   route.put(`/:offerId`, paramValidator(`offerId`, `number`), validatorMiddleware(offerSchemaValidator), async (req, res) => {
     const {offerId} = req.params;
     const data = req.body;
-    const errors = validateExistValue(data, [`type`, `title`, `description`, `price`]);
-    if (errors.length > 0) {
-      logger.info(`Не удалось создать новое объявление:\n ${errors}`);
-      res.json({response: `Не удалось создать новое объявление:\n ${errors}`});
-      return;
-    }
 
     try {
       const offer = await service.update(offerId, data);

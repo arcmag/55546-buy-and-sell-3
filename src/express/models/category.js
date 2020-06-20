@@ -3,13 +3,13 @@
 module.exports = (sequelize, DataTypes) => {
   class Category extends sequelize.Sequelize.Model { }
   Category.init({
-    id: {
+    'id': {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true
     },
-    name: DataTypes.STRING,
-    code: DataTypes.STRING,
+    'name': DataTypes.STRING,
+    'code': DataTypes.STRING,
   }, {
     sequelize,
     tableName: `categories`,

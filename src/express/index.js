@@ -12,11 +12,16 @@ const apiCategories = require(`./routes/api/categories`);
 const apiSearch = require(`./routes/api/search`);
 const apiOffers = require(`./routes/api/offers`);
 const apiComments = require(`./routes/api/comments`);
+const apiUser = require(`./routes/api/user`);
 
 const dataServiceCategory = require(`../service/data-service/category`);
 const dataServiceSearch = require(`../service/data-service/search`);
 const dataServiceOffer = require(`../service/data-service/offer`);
 const dataServiceComment = require(`../service/data-service/comment`);
+const dataServiceUser = require(`../service/data-service/user`);
+
+const offersRoute = require(`./routes/offers`);
+const userRoute = require(`./routes/user`);
 
 app.set(`view engine`, `pug`);
 app.set(`views`, path.join(__dirname, `templates`));
@@ -38,8 +43,10 @@ apiCategories(app, dataServiceCategory);
 apiSearch(app, dataServiceSearch);
 apiOffers(app, dataServiceOffer);
 apiComments(app, dataServiceComment);
+apiUser(app, dataServiceUser);
 
-app.use(`/offers`, require(`./routes/offers`));
+app.use(`/offers`, offersRoute);
+app.use(`/user`, userRoute);
 app.use(appRoutes);
 
 app.use((req, res) => {

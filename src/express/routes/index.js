@@ -35,14 +35,6 @@ appRouter.get(`/`, async (req, res) => {
   logger.info(`Status code ${res.statusCode}`);
 });
 
-appRouter.get(`/register`, async (req, res) => {
-  res.render(`sign-up`);
-});
-
-appRouter.get(`/login`, (req, res) => {
-  res.render(`login`);
-});
-
 appRouter.get(`/my`, async (req, res) => {
   let offers = [];
   try {
