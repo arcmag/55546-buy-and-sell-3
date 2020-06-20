@@ -18,7 +18,7 @@ const multerStorage = multer.diskStorage({
 });
 
 route.get(`/register`, (req, res) => {
-  res.render(`sign-up`, {errors: null});
+  res.render(`sign-up`, {errors: null, data: {}});
 });
 
 route.post(`/register`, multer({storage: multerStorage}).single(`avatar`), async (req, res) => {
@@ -41,15 +41,16 @@ route.post(`/register`, multer({storage: multerStorage}).single(`avatar`), async
     }
     logger.error(`Ошибка при регистрации: ${err}`);
   }
-  res.render(`sign-up`, {errors});
+  res.render(`sign-up`, {errors, data: body});
 });
 
 route.get(`/login`, (req, res) => {
-  res.render(`login`);
+  res.render(`login`, {errors: null});
 });
 
 route.post(`/login`, (req, res) => {
-  res.render(`login`);
+  let errors = null;
+  res.render(`login`, {errors, data: {}});
 });
 
 module.exports = route;

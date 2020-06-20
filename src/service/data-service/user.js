@@ -12,6 +12,11 @@ class SearchService {
     const {User} = (await sequelize()).models;
     await User.create(data);
   }
+
+  async checkEmail(email) {
+    const {User} = (await sequelize()).models;
+    return (await User.findOne({where: {email}})) === null;
+  }
 }
 
 module.exports = SearchService;

@@ -17,6 +17,12 @@ module.exports = async (app, ClassService) => {
   app.use(`/api/user`, route);
   route.post(`/`, validatorMiddleware(registerSchemaValidator), async (req, res) => {
     const {body} = req;
+
+    if (!(await service.checkEmail(body.email))) {
+      res.status(400).json({message: [`Указанный почтовый ящик уже используется`], data: {}});
+      return;
+    }
+
     try {
       await service.create({...body, password: bcrypt.hashSync(body.password, PASSWORD_SALT)});
       logger.info(`Создан новый пользователь`);
