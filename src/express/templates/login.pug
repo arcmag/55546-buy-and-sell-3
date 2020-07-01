@@ -3,16 +3,23 @@ extends layouts/layout.pug
 block content
   main.page-content
     section.login
+      if errors
+        .form__validation-error
+        p.form__error-message Ошибки при авторизации:
+        ul
+          each error in errors
+            li.form__error= error
       form.login__form.form(action='/user/login', method='post')
         .login__title
           a.login__link(href='/user/register') Регистрация
           h2 Вход
         .form__field.login__field
-          input#email.js-field(type='email', name='email', required)
+          input#email.js-field(type='email', name='email', required, value= data.email)
           label(for='email') Эл. почта
           span Обязательное поле
         .form__field.login__field
           input#password.js-field(type='password', name='password', required)
           label(for='password') Пароль
           span Обязательное поле
+        input(type='hidden' name='csrf' value='#{csrf}')
         button.login__button.btn.btn--medium.js-button(type='submit', disabled) Войти

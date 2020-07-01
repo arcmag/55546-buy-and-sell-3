@@ -6,8 +6,9 @@ const router = require(`express`).Router;
 const route = router();
 const {getUrlRequest} = require(`../../utils`);
 const logger = require(`../../logger`).getLogger();
-
+const csrf = require(`csurf`);
 const multer = require(`multer`);
+
 const multerStorage = multer.diskStorage({
   destination(req, file, cb) {
     cb(null, path.join(__dirname, `../../tmp`));
@@ -16,6 +17,8 @@ const multerStorage = multer.diskStorage({
     cb(null, file.originalname);
   }
 });
+
+const csrfProtection = csrf({cookie: true});
 
 route.get(`/register`, (req, res) => {
   res.render(`sign-up`, {errors: null, data: {}});
@@ -44,16 +47,39 @@ route.post(`/register`, multer({storage: multerStorage}).single(`avatar`), async
   res.render(`sign-up`, {errors, data: body});
 });
 
-route.get(`/login`, (req, res) => {
-  res.render(`login`, {errors: null});
+route.get(`/login`, csrfProtection, (req, res) => {
+
+  res.render(`login`, {
+    errors: null,
+    data: {},
+    csrf: req.csrfToken()
+  });
 });
 
-route.post(`/login`, async (req, res) => {
+route.post(`/login`, csrfProtection, async (req, res) => {
   const {body} = req;
-  console.log(`login post: `, body);
   let errors = null;
+  try {
+    const user = await axios.post(getUrlRequest(req, `/api/user/login`), JSON.stringify(body),
+        {headers: {'Content-Type': `application/json`}});
 
-  res.render(`login`, {errors, data: {}});
+    req.session[`user_id`] = user.data.id;
+
+    logger.info(`Авторизация прошла успешно`);
+    res.redirect(`/`);
+  } catch (err) {
+    if (err.response && err.response.data) {
+      errors = err.response.data.message;
+      logger.error(`Ошибка валидации: ${errors}`);
+    }
+    logger.error(`Ошибка при авторизации: ${err}`);
+  }
+
+  res.render(`login`, {
+    errors,
+    data: body,
+    csrf: req.csrfToken()
+  });
 });
 
 module.exports = route;

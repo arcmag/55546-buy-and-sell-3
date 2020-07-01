@@ -2,6 +2,7 @@
 
 const path = require(`path`);
 const express = require(`express`);
+const cookieParser = require(`cookie-parser`);
 const appRoutes = require(`./routes`);
 const app = express();
 
@@ -14,6 +15,8 @@ const apiOffers = require(`./routes/api/offers`);
 const apiComments = require(`./routes/api/comments`);
 const apiUser = require(`./routes/api/user`);
 
+const expressSession = require(`express-session`);
+
 const dataServiceCategory = require(`../service/data-service/category`);
 const dataServiceSearch = require(`../service/data-service/search`);
 const dataServiceOffer = require(`../service/data-service/offer`);
@@ -23,11 +26,23 @@ const dataServiceUser = require(`../service/data-service/user`);
 const offersRoute = require(`./routes/offers`);
 const userRoute = require(`./routes/user`);
 
+const getUser = require(`./middleware/get-user`);
+
 app.set(`view engine`, `pug`);
 app.set(`views`, path.join(__dirname, `templates`));
 
 app.use(express.static(STATIC_DIR));
 app.use(express.json());
+app.use(express.urlencoded({extended: true}));
+
+app.use(cookieParser());
+app.use(expressSession({
+  secret: `SECRET_SESSION`,
+  resave: false,
+  saveUninitialized: false,
+  name: `session_id`
+}));
+app.use(getUser);
 
 app.use((_req, res, next) => {
   res.db = app.get(`db`);
