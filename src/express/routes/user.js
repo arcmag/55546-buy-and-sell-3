@@ -18,7 +18,7 @@ const multerStorage = multer.diskStorage({
   }
 });
 
-const csrfProtection = csrf({cookie: true});
+const csrfProtection = csrf();
 
 route.get(`/register`, (req, res) => {
   res.render(`sign-up`, {errors: null, data: {}});

@@ -2,7 +2,6 @@
 
 const path = require(`path`);
 const express = require(`express`);
-const cookieParser = require(`cookie-parser`);
 const appRoutes = require(`./routes`);
 const app = express();
 
@@ -35,7 +34,6 @@ app.use(express.static(STATIC_DIR));
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
-app.use(cookieParser());
 app.use(expressSession({
   secret: `SECRET_SESSION`,
   resave: false,

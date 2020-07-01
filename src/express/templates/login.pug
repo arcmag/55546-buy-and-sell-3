@@ -21,5 +21,5 @@ block content
           input#password.js-field(type='password', name='password', required)
           label(for='password') Пароль
           span Обязательное поле
-        input(type='hidden' name='csrf' value='#{csrf}')
+        input(type='hidden' name='_csrf' value= csrf)
         button.login__button.btn.btn--medium.js-button(type='submit', disabled) Войти
