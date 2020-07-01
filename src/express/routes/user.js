@@ -48,8 +48,11 @@ route.get(`/login`, (req, res) => {
   res.render(`login`, {errors: null});
 });
 
-route.post(`/login`, (req, res) => {
+route.post(`/login`, async (req, res) => {
+  const {body} = req;
+  console.log(`login post: `, body);
   let errors = null;
+
   res.render(`login`, {errors, data: {}});
 });
 
