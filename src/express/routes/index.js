@@ -5,6 +5,7 @@ const appRouter = router();
 const logger = require(`../../logger`).getLogger();
 const axios = require(`axios`);
 const {getUrlRequest} = require(`../../utils`);
+const authenticate = require(`../middleware/authenticate`);
 
 appRouter.get(`/`, async (req, res) => {
   let offers = [];
@@ -35,7 +36,7 @@ appRouter.get(`/`, async (req, res) => {
   logger.info(`Status code ${res.statusCode}`);
 });
 
-appRouter.get(`/my`, async (req, res) => {
+appRouter.get(`/my`, authenticate, async (req, res) => {
   let offers = [];
   try {
     offers = (await axios.get(getUrlRequest(req, `/api/offers/user/1`))).data;
@@ -46,7 +47,7 @@ appRouter.get(`/my`, async (req, res) => {
   res.render(`my-offers`, {offers});
 });
 
-appRouter.get(`/my/comments`, async (req, res) => {
+appRouter.get(`/my/comments`, authenticate, async (req, res) => {
   let offers = [];
   try {
     offers = (await axios.get(getUrlRequest(req, `/api/offers/user/1`))).data.splice(0, 3);

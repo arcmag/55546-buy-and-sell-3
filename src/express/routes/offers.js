@@ -7,6 +7,7 @@ const path = require(`path`);
 const axios = require(`axios`);
 const {pagination} = require(`../../utils`);
 const {CATEGORY_LIMIT} = require(`../../const`);
+const authenticate = require(`../middleware/authenticate`);
 
 const multer = require(`multer`);
 const multerStorage = multer.diskStorage({
@@ -56,7 +57,7 @@ route.get(`/category/:id`, [paramValidator(`id`, `number`)], async (req, res) =>
   });
 });
 
-route.get(`/add`, async (req, res) => {
+route.get(`/add`, authenticate, async (req, res) => {
   logger.info(`Создание нового предложения: ${res.statusCode}`);
 
   let categories = [];
@@ -69,7 +70,7 @@ route.get(`/add`, async (req, res) => {
   res.render(`offer-create`, {categories, offer: {categories: []}});
 });
 
-route.post(`/add`, multer({storage: multerStorage}).single(`avatar`), async (req, res) => {
+route.post(`/add`, [authenticate, multer({storage: multerStorage}).single(`avatar`)], async (req, res) => {
   const {file, body} = req;
   let errors = null;
 
@@ -105,7 +106,7 @@ route.post(`/add`, multer({storage: multerStorage}).single(`avatar`), async (req
   res.render(`offer-create`, {categories, offer: {categories: [], ...body}, errors});
 });
 
-route.get(`/edit/:id`, paramValidator(`id`, `number`), async (req, res) => {
+route.get(`/edit/:id`, [authenticate, paramValidator(`id`, `number`)], async (req, res) => {
   let offer = {};
   let categories = [];
 
@@ -125,6 +126,7 @@ route.get(`/edit/:id`, paramValidator(`id`, `number`), async (req, res) => {
 });
 
 route.post(`/edit/:id`, [
+  authenticate,
   paramValidator(`id`, `number`),
   multer({storage: multerStorage}).single(`avatar`)
 ], async (req, res) => {

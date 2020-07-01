@@ -82,5 +82,10 @@ route.post(`/login`, csrfProtection, async (req, res) => {
   });
 });
 
+route.get(`/logout`, (req, res) => {
+  delete req.session[`user_id`];
+  res.redirect(`/user/login`);
+});
+
 module.exports = route;
 
